@@ -5,13 +5,18 @@ using UnityEngine;
 public class MapGeneration : MonoBehaviour
 {
     public int[,] mapArray;
+    public bool useGradient = false;
+    public Sprite[] tileSprites;
+
     [Range(5, 200)] public int minDimensions;
     [Range(10, 500)] public int maxDimensions;
     public GameObject testTile;
 
     int[,] newMap(int min, int max)
     {
-        int[,] newMap = new int[Random.Range(min, max), Random.Range(min, max)];
+        int mapHeight = Random.Range(min, max);
+        int mapWidth = mapHeight + Random.Range(Mathf.RoundToInt(-mapHeight/3), Mathf.RoundToInt(mapHeight/3));
+        int[,] newMap = new int[mapHeight, mapWidth];
         return newMap;
     }
 
@@ -146,27 +151,28 @@ public class MapGeneration : MonoBehaviour
         mapArray = randomNumbers(mapArray, 100, 2);
         mapArray = smoothMap(mapArray, 12);
 
-        for (int a  = 0; a < mapArray.GetLength(0); a ++)
+        for (int a = mapArray.GetLength(0) - 1 ; a > 0 ; a --)
         {
-            for (int b = 0; b < mapArray.GetLength(1); b++)
+            for (int b = mapArray.GetLength(1) - 1; b > 0 ; b--)
             {
                 
                 GameObject newTile = Instantiate(testTile, new Vector3(a * 0.32f, b * 0.32f, 0), Quaternion.identity);
-                
-                /*if (mapArray[a, b] > 10 & mapArray[a, b] < 20)
+
+                if (useGradient == false)
                 {
-                    newTile.GetComponent<SpriteRenderer>().color = new Color(0.75f,0.5f,0.45f);
-                }*/
-                if (mapArray[a, b] > 10 & mapArray[a, b] < 100)
-                {
-                    newTile.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.1f, 0.1f);
+                    if (mapArray[a, b] > 10 & mapArray[a, b] < 100)
+                    {
+                        newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[1];
+                    }
+                    else
+                    {
+                        newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[0];
+                    }
                 }
                 else
                 {
-                    newTile.GetComponent<SpriteRenderer>().color = new Color(0, 0.6f, 0);
+                    newTile.GetComponent<SpriteRenderer>().color = new Color((float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100);
                 }
-                
-                //newTile.GetComponent<SpriteRenderer>().color = new Color((float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100);
             }
             
         }
