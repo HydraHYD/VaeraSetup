@@ -60,6 +60,7 @@ public class GenericAttack : MonoBehaviour
 
     void attackComponents(Vector2 attackSize)
     {
+        //lifeTime = 1;
         Size = new Vector2(0.2f, 0.06f);
         offset = new Vector2(0, -0.06f);
         //targetPoint = new Vector2(0,0);
@@ -68,7 +69,7 @@ public class GenericAttack : MonoBehaviour
         GetComponent<PolygonCollider2D>().points = new Vector2[] { new Vector2(-Size.x / 2 + offset.x, Size.y / 2 + offset.y), new Vector2(-Size.x / 2 + offset.x, -Size.y / 2 + offset.y), new Vector2(Size.x / 2 + offset.x, -Size.y / 2 + offset.y), new Vector2(Size.x / 2 + offset.x, Size.y / 2 + offset.y) };
         GetComponent<PolygonCollider2D>().isTrigger = true;
 
-        if (lifeTime == 0)
+        if (lifeTime == 0 || lifeTime == 1)
         {
             transform.SetParent(parent.transform);
         }
@@ -82,9 +83,10 @@ public class GenericAttack : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D hit)
     {
-        if (hit.gameObject.tag == "NPC" & hit.gameObject != parent)
+        if (hit.gameObject.tag == "NPC" & hit.gameObject != parent.transform.parent.gameObject)
         {
             hit.gameObject.tag = "Destroyed";
+            hit.gameObject.GetComponent<GenericControl>().destroyed = true;
         }
     }
 

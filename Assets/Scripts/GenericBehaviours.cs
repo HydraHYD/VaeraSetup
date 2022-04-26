@@ -207,10 +207,19 @@ public class GenericBehaviours : MonoBehaviour
         return enemyList;
     }
 
-
-    public void newAttack(GameObject attackObject, int[] spriteValue, float damage, string[] effects, float speed, GameObject parent, float sizeMult, Vector3 offset)
+    public float attackDirection(Vector2 velocity)
     {
-        GameObject newAttack = Instantiate(attackObject, parent.transform.position + offset, Quaternion.identity);
+        float degAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+        return degAngle;
+    }
+
+
+    public void newAttack(Vector2 velocity, GameObject attackObject, int[] spriteValue, float damage, string[] effects, float speed, GameObject parent, float sizeMult, float offset)
+    {
+        float newSpeed = Mathf.Sqrt(Mathf.Pow(velocity.x, 2) + Mathf.Pow(velocity.y, 2));
+        float ratio = offset / newSpeed;
+        Vector2 spawnPos = new Vector2(velocity.x * ratio, velocity.y * ratio);
+        GameObject newAttack = Instantiate(attackObject, parent.transform.position + new Vector3(spawnPos.x, spawnPos.y, 0), Quaternion.identity * Quaternion.Euler(0, 0, attackDirection(velocity) + 90));
         GenericAttack attackData = newAttack.GetComponent<GenericAttack>();
         attackData.attackSprite = new Sprite[spriteValue.Length];
         attackData.parent = parent;

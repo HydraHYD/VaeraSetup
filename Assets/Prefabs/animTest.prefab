@@ -155,6 +155,7 @@ MonoBehaviour:
   speed: 3
   species: 
   enemySpecies: []
+  cam: {fileID: 0}
 --- !u!114 &6048045019391798428
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ public class GenericControl : MonoBehaviour
     public int switchState = 0; // 0 - IDLE, 1 - AGGRESSIVE, 2 - DEFENSIVE, ADD MORE IF NECESSARY
     public GameObject lastHit;
     Vector2 velocity = new Vector2(0, 0);
+    public bool destroyed = false;
 
     // SCRIPTS
     public GenericSetup setup; // NPC Component setup
@@ -17,6 +18,7 @@ public class GenericControl : MonoBehaviour
 
     // SETUP
     public Vector2[] visionPoints;
+    public string[] subChildren;
     public string[] children;
 
     public Vector2 hitbox; // (Width, Height)
@@ -45,6 +47,8 @@ public class GenericControl : MonoBehaviour
     public string species;
     public List<string> enemySpecies;
 
+    public Camera cam;
+
     void tempSetup() // things that will be handled by load script in the future
     {
         species = "human";
@@ -64,7 +68,8 @@ public class GenericControl : MonoBehaviour
         loopFrames = idleFrames;
         actionFrames = new int[] { 3, 0, 4, 0 };
         visionPoints = new Vector2[] { new Vector2(0, 0), new Vector2(-0.3f, -1.5f), new Vector2(0.3f, -1.5f) };
-        children = new string[] { "vision", "attack", "overlay" };
+        children = new string[] { "attack", "rotate" };
+        subChildren = new string[] { "vision", "overlay" };
         hitbox = new Vector2(0.1f, 0.2f);
         gameObject.tag = "NPC";
         mainSprite = upSprite;
@@ -74,8 +79,11 @@ public class GenericControl : MonoBehaviour
         setup.newBody(gameObject);
         setup.newCollider(new Vector2[] { new Vector2(-hitbox.x / 2, hitbox.y / 2), new Vector2(-hitbox.x / 2, -hitbox.y / 2), new Vector2(hitbox.x / 2, -hitbox.y / 2), new Vector2(hitbox.x / 2, hitbox.y / 2) }, gameObject);
 
-        setup.newChild("rotate", gameObject);
         foreach (string a in children)
+        {
+            setup.newChild(a, gameObject);
+        }
+        foreach (string a in subChildren)
         {
             setup.newChild(a, transform.Find("rotate").gameObject);
         }
@@ -104,7 +112,8 @@ public class GenericControl : MonoBehaviour
         }
         if (Input.GetAxis("Fire1") != 0 & activeAction == false) // ACTION CONDITION, CHANGE LATER
         {
-            behaviours.newAttack(globalAttackObject, new int[] { 0, 1 }, 10, new string[0], 0, gameObject, 1, new Vector3 (0, -0.1f, 0));
+            Vector2 tempVel = new Vector2(targetPoint.x - transform.position.x, targetPoint.y - transform.position.y);
+            behaviours.newAttack(tempVel, globalAttackObject, new int[] { 0, 1 }, 10, new string[0], 0, transform.Find("attack").gameObject, 1, 0.1f);
             framePos = 0;
             activeAction = true;
         }
@@ -156,8 +165,17 @@ public class GenericControl : MonoBehaviour
     }
 
     void aggressiveFixed()
-    { 
-    
+    {
+        if (Vector2.Distance(transform.position, targetPoint) < 0.5f)
+        {
+            if (Random.Range(0, 30) == 0)
+            {
+                Vector2 tempVel = new Vector2(targetPoint.x - transform.position.x, targetPoint.y - transform.position.y);
+                behaviours.newAttack(tempVel, globalAttackObject, new int[] { 0, 1 }, 10, new string[0], 0, transform.Find("attack").gameObject, 1, 0.1f);
+                framePos = 0;
+                activeAction = true;
+            }
+        }
     }
 
 
@@ -176,7 +194,7 @@ public class GenericControl : MonoBehaviour
             animSwitch();
             constantBehaviours();
 
-            if (activeTarget != gameObject)
+            if (activeTarget != gameObject & activeTarget.tag != "Destroyed")
             {
                 switchState = 1;
             }
@@ -197,6 +215,18 @@ public class GenericControl : MonoBehaviour
                     break;
                 default:
                     break;
+            }
+        }
+        else
+        {
+            if (destroyed == true)
+            {
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                foreach (string a in children)
+                {
+                    Destroy(transform.Find(a).gameObject);
+                }
+                destroyed = false;
             }
         }
         

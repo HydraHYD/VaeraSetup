@@ -150,6 +150,7 @@ public class MapGeneration : MonoBehaviour
         {
             for (int b = 0; b < mapArray.GetLength(1); b++)
             {
+                
                 GameObject newTile = Instantiate(testTile, new Vector3(a * 0.32f, b * 0.32f, 0), Quaternion.identity);
                 
                 if (mapArray[a, b] > 10 & mapArray[a, b] < 20)
