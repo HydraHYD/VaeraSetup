@@ -79,7 +79,7 @@ public class MapGeneration : MonoBehaviour
         if (newValue > 50)
         {
             int difference = newValue - 50;
-            if (Random.Range(0, difference) > 10)
+            if (Random.Range(0, difference) > 5)
             {
                 newValue += Random.Range(20, 50);
             }
@@ -144,7 +144,7 @@ public class MapGeneration : MonoBehaviour
         }
         mapArray = newMap(minDimensions, maxDimensions);
         mapArray = randomNumbers(mapArray, 100, 2);
-        mapArray = smoothMap(mapArray, 10);
+        mapArray = smoothMap(mapArray, 12);
 
         for (int a  = 0; a < mapArray.GetLength(0); a ++)
         {
@@ -153,11 +153,11 @@ public class MapGeneration : MonoBehaviour
                 
                 GameObject newTile = Instantiate(testTile, new Vector3(a * 0.32f, b * 0.32f, 0), Quaternion.identity);
                 
-                if (mapArray[a, b] > 10 & mapArray[a, b] < 20)
+                /*if (mapArray[a, b] > 10 & mapArray[a, b] < 20)
                 {
                     newTile.GetComponent<SpriteRenderer>().color = new Color(0.75f,0.5f,0.45f);
-                }
-                else if (mapArray[a, b] > 20 & mapArray[a, b] < 100)
+                }*/
+                if (mapArray[a, b] > 10 & mapArray[a, b] < 100)
                 {
                     newTile.GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.1f, 0.1f);
                 }
@@ -165,7 +165,7 @@ public class MapGeneration : MonoBehaviour
                 {
                     newTile.GetComponent<SpriteRenderer>().color = new Color(0, 0.6f, 0);
                 }
-
+                
                 //newTile.GetComponent<SpriteRenderer>().color = new Color((float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100, (float)mapArray[a, b] / 100);
             }
             

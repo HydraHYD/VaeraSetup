@@ -33,6 +33,7 @@ public class GenericControl : MonoBehaviour
     public Sprite[] rightSprite;
     public Sprite[] downSprite;
     public Sprite[] leftSprite;
+    public Sprite[] miscSprites;
     public int[] idleFrames;
     public int[] loopFrames;
     public int[] actionFrames;
@@ -64,9 +65,9 @@ public class GenericControl : MonoBehaviour
 
         // Variable Constants
         lastHit = gameObject;
-        idleFrames = new int[] { 0, 1, 0, 2 };
+        idleFrames = new int[] { 0, 1 };
         loopFrames = idleFrames;
-        actionFrames = new int[] { 3, 0, 4, 0 };
+        actionFrames = new int[] { 0, 4, 5 };
         visionPoints = new Vector2[] { new Vector2(0, 0), new Vector2(-0.3f, -1.5f), new Vector2(0.3f, -1.5f) };
         children = new string[] { "attack", "rotate" };
         subChildren = new string[] { "vision", "overlay" };
@@ -102,14 +103,28 @@ public class GenericControl : MonoBehaviour
 
     void animSwitch() // DETECT ACTIONS, Run through Update, CONSTANT
     {
+        if (velocity.x != 0 || velocity.y != 0)
+        {
+            speed = 10;
+            loopFrames = new int[] { 2, 0, 3, 0 };
+        }
+        else
+        {
+            speed = 30;
+            loopFrames = idleFrames;
+        }
+
         if (activeAction == true)
         {
+            speed = 10;
             currentFrames = actionFrames;
         }
         else
         {
             currentFrames = loopFrames;
         }
+        
+
         if (Input.GetAxis("Fire1") != 0 & activeAction == false) // ACTION CONDITION, CHANGE LATER
         {
             Vector2 tempVel = new Vector2(targetPoint.x - transform.position.x, targetPoint.y - transform.position.y);
@@ -225,6 +240,12 @@ public class GenericControl : MonoBehaviour
                 foreach (string a in children)
                 {
                     Destroy(transform.Find(a).gameObject);
+                    GetComponent<SpriteRenderer>().sprite = miscSprites[1];
+                    if (Random.Range(0, 2) == 0)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = true;
+                    }
+
                 }
                 destroyed = false;
             }
